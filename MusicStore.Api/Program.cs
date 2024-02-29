@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 using MusicStore.Domain;
 using MusicStore.Persistence;
-using MusicStore.Repositories;
+using MusicStore.Repositories.Implementations;
+using MusicStore.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args); //Crea puerto de desarrollo para la aplicacion web
 
@@ -12,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args); //Crea puerto de desarrollo pa
 builder.Services.AddDbContext<MusicStoreDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("MusicStoreDb"));
-    
+
 });
 //builder.Services.AddSingleton<IGenreRepository,GenreRepository>(); //Solo localmente
 builder.Services.AddTransient<IGenreRepository, GenreRepository>(); //Con base de datos
@@ -20,7 +22,7 @@ builder.Services.AddTransient<IGenreRepository, GenreRepository>(); //Con base d
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build(); 
+var app = builder.Build();
 
 
 
@@ -34,24 +36,38 @@ if (app.Environment.IsDevelopment()) //este muestra el swagger
 app.UseHttpsRedirection();
 
 //Aqui mapeamos los endpoints de la aplicaciones
-app.MapGet("/api/Genres", (IGenreRepository repository) => Results.Ok(repository.ListAll()));
-app.MapPost("/api/Genres", (IGenreRepository repository, Genre request) =>
+app.MapGet("/api/Genres", async (IGenreRepository repository) =>
+  Results.Ok(await repository.ListAsync()));
+
+app.MapPost("/api/Genres", async (IGenreRepository repository, Genre request) =>
 {
-    repository.Add(request);
-    return Results.Ok();
+    var response = await repository.AddAsync(request);
+    return Results.Ok(new
+    {
+        Id = response
+    });
 
 });
 
-app.MapGet("/api/Genres/{id:int}", (IGenreRepository repository, int id) => Results.Ok(repository.GetById(id)));
-app.MapPut("/api/Genres/{id:int}", (IGenreRepository repository, int id, Genre request) =>
+app.MapGet("/api/Genres/{id:int}", async (IGenreRepository repository, int id) =>
 {
-    repository.Update(id, request);
+    var registro = await repository.FindByIdAsync(id);
+    return registro is null ? Results.NotFound() : Results.Ok(registro);
+});
+app.MapPut("/api/Genres/{id:int}", async (IGenreRepository repository, int id, Genre request) =>
+{
+    var registro = await repository.FindByIdAsync(id);
+    if (registro is null)
+        return Results.NotFound();
+    registro.Name = request.Name;
+    await repository.UpdateAsync(registro);
     return Results.Ok();
 });
 
-app.MapDelete("/api/Genre/{id:int}", (IGenreRepository repository, int id) =>
+app.MapDelete("/api/Genre/{id:int}", async (IGenreRepository repository, int id) =>
 {
-    repository.Delete(id);
+  
+    await repository.DeleteAsync(id);
     return Results.Ok();
 });
 
