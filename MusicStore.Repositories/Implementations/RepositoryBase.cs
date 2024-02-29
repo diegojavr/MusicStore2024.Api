@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using MusicStore.Domain;
 using MusicStore.Repositories.Interfaces;
@@ -62,6 +63,39 @@ namespace MusicStore.Repositories.Implementations
             return await Context.Set<TEntity>()
                 .AsNoTracking()
                 .ToListAsync();
+        }
+
+        public async Task<(ICollection<TInfo> Collection, int Total)> ListAsync<TInfo, TKey>
+            (Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, TInfo>> selector,
+            Expression<Func<TEntity, TKey>> orderBy,
+            int page, int rows)
+        {
+            var collection = await Context.Set<TEntity>()
+                .Where(predicate)
+                .OrderBy(orderBy)
+                .Skip((page - 1) * rows)
+                .Take(rows)
+                .Select(selector)
+                .ToListAsync(); //devuelve la coleccion
+
+            var total = await Context.Set<TEntity>()
+                .Where(predicate)
+                .CountAsync();
+                
+            return (collection, total); 
+        }
+
+        public async Task<ICollection<TInfo>> ListAsync<TInfo>(
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, TInfo>> selector)
+        {
+            return await Context.Set<TEntity>()
+                .Where(predicate)
+                .Select(selector)
+                .ToListAsync(); //devuelve la coleccion
+
+            
         }
 
         public virtual async Task UpdateAsync(TEntity? entity = default)
