@@ -1,4 +1,5 @@
-﻿using MusicStore.Dto.Response;
+﻿using MusicStore.Dto.Request;
+using MusicStore.Dto.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +15,8 @@ namespace MusicStore.Services.Interfaces
 
         Task<BaseResponseGeneric<GenreDtoResponse>> FindByIdAsync(int id);
 
-        Task<BaseResponseGeneric<int>> AddAsync(GenreDtoResponse request);
-        Task<BaseResponse> UpdateAsync (int id, GenreDtoResponse request);
+        Task<BaseResponseGeneric<int>> AddAsync(GenreDtoRequest request);
+        Task<BaseResponse> UpdateAsync (int id, GenreDtoRequest request);
         Task<BaseResponse> DeleteAsync (int id);
     }
 }

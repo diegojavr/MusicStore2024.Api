@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using MusicStore.Domain;
+using MusicStore.Dto.Request;
 using MusicStore.Dto.Response;
 using MusicStore.Repositories.Interfaces;
 using MusicStore.Services.Interfaces;
@@ -20,19 +22,77 @@ namespace MusicStore.Services.Implementations
             _repository = repository;
             _logger = logger;
         }
-        public Task<BaseResponseGeneric<int>> AddAsync(GenreDtoResponse request)
+        public async Task<BaseResponseGeneric<int>> AddAsync(GenreDtoRequest request)
         {
-            throw new NotImplementedException();
+            var response = new BaseResponseGeneric<int>();
+
+            try
+            {
+                var registro = new Genre
+                {
+                    Name = request.Name,
+                    Status = request.Status,
+                };
+
+                var data = await _repository.AddAsync(registro);
+                response.Success= true;
+            }
+            catch (Exception ex)
+            {
+
+                response.ErrorMessage = "Error al agregar";
+                _logger.LogCritical(ex,"{ErrorMessage} {Message}", response.ErrorMessage,ex.Message);
+            }
+            return response;
         }
 
-        public Task<BaseResponse> DeleteAsync(int id)
+        public async Task<BaseResponse> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var response = new BaseResponse();
+            try
+            {
+               
+                await _repository.DeleteAsync(id);
+                response.Success= true;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = "Error al eliminar";
+                _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message); ;
+            }
+            return response;
         }
 
-        public Task<BaseResponseGeneric<GenreDtoResponse>> FindByIdAsync(int id)
+        public async Task<BaseResponseGeneric<GenreDtoResponse>> FindByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var response = new BaseResponseGeneric<GenreDtoResponse>();
+            try
+            {
+                var registro = await _repository.FindByIdAsync(id);
+                if ( registro == null)
+                {
+                    response.ErrorMessage = "No se encontró el registro";
+                    response.Success= false;
+                    return response;
+                }
+
+                response.Data = new GenreDtoResponse
+                {
+                    Id = registro.Id,
+                    Name = registro.Name,
+                    Status = registro.Status
+                };
+
+                response.Success= true;
+
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = "Error al obtener";
+                _logger.LogCritical(ex,"{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+                
+            }
+            return response;
         }
 
         public async Task<BaseResponseGeneric<ICollection<GenreDtoResponse>>> ListAsync()
@@ -62,9 +122,30 @@ namespace MusicStore.Services.Implementations
             return response;
         }
 
-        public Task<BaseResponse> UpdateAsync(int id, GenreDtoResponse request)
+        public async Task<BaseResponse> UpdateAsync(int id, GenreDtoRequest request)
         {
-            throw new NotImplementedException();
+            var response = new BaseResponse();
+            try
+            {
+                var registro = await _repository.FindByIdAsync(id);
+                if ( registro == null)
+                {
+                    response.ErrorMessage = "No se encontró el registro";
+                    response.Success= false;
+                    return response;
+                }
+                registro.Name = request.Name;
+                registro.Status = request.Status;
+
+                await _repository.UpdateAsync( registro );
+                response.Success = true;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = "Error al actualizar";
+                _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message); ;
+            }
+            return response;
         }
     }
 }

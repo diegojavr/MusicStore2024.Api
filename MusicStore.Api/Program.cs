@@ -35,41 +35,43 @@ if (app.Environment.IsDevelopment()) //este muestra el swagger
 
 app.UseHttpsRedirection();
 
+
+
 //Aqui mapeamos los endpoints de la aplicaciones
-app.MapGet("/api/Genres", async (IGenreRepository repository) =>
-  Results.Ok(await repository.ListAsync()));
+//app.MapGet("/api/Genres", async (IGenreRepository repository) =>
+//  Results.Ok(await repository.ListAsync()));
 
-app.MapPost("/api/Genres", async (IGenreRepository repository, Genre request) =>
-{
-    var response = await repository.AddAsync(request);
-    return Results.Ok(new
-    {
-        Id = response
-    });
+//app.MapPost("/api/Genres", async (IGenreRepository repository, Genre request) =>
+//{
+//    var response = await repository.AddAsync(request);
+//    return Results.Ok(new
+//    {
+//        Id = response
+//    });
 
-});
+//});
 
-app.MapGet("/api/Genres/{id:int}", async (IGenreRepository repository, int id) =>
-{
-    var registro = await repository.FindByIdAsync(id);
-    return registro is null ? Results.NotFound() : Results.Ok(registro);
-});
-app.MapPut("/api/Genres/{id:int}", async (IGenreRepository repository, int id, Genre request) =>
-{
-    var registro = await repository.FindByIdAsync(id);
-    if (registro is null)
-        return Results.NotFound();
-    registro.Name = request.Name;
-    await repository.UpdateAsync(registro);
-    return Results.Ok();
-});
+//app.MapGet("/api/Genres/{id:int}", async (IGenreRepository repository, int id) =>
+//{
+//    var registro = await repository.FindByIdAsync(id);
+//    return registro is null ? Results.NotFound() : Results.Ok(registro);
+//});
+//app.MapPut("/api/Genres/{id:int}", async (IGenreRepository repository, int id, Genre request) =>
+//{
+//    var registro = await repository.FindByIdAsync(id);
+//    if (registro is null)
+//        return Results.NotFound();
+//    registro.Name = request.Name;
+//    await repository.UpdateAsync(registro);
+//    return Results.Ok();
+//});
 
-app.MapDelete("/api/Genre/{id:int}", async (IGenreRepository repository, int id) =>
-{
+//app.MapDelete("/api/Genre/{id:int}", async (IGenreRepository repository, int id) =>
+//{
   
-    await repository.DeleteAsync(id);
-    return Results.Ok();
-});
+//    await repository.DeleteAsync(id);
+//    return Results.Ok();
+//});
 
 app.Run();
 
