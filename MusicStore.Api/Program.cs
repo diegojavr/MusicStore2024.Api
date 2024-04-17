@@ -1,9 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Win32;
+using MusicStore.Api.Controllers;
 using MusicStore.Domain;
 using MusicStore.Persistence;
 using MusicStore.Repositories.Implementations;
 using MusicStore.Repositories.Interfaces;
+using MusicStore.Services.Interfaces;
+using MusicStore.Services.Implementations;
+using MusicStore.Services.Profiles;
 
 var builder = WebApplication.CreateBuilder(args); //Crea puerto de desarrollo para la aplicacion web
 
@@ -18,7 +22,16 @@ builder.Services.AddDbContext<MusicStoreDbContext>(options =>
 });
 //builder.Services.AddSingleton<IGenreRepository,GenreRepository>(); //Solo localmente
 builder.Services.AddTransient<IGenreRepository, GenreRepository>(); //Con base de datos
+builder.Services.AddTransient<IGenreService, GenreService>();
+builder.Services.AddTransient<IConcertRepository, ConcertRepository>(); //Con base de datos
+builder.Services.AddTransient<IConcertService, ConcertService>();
 
+builder.Services.AddAutoMapper(config =>
+{
+    config.AddProfile<ConcertProfile>(); 
+});
+
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -68,10 +81,11 @@ app.UseHttpsRedirection();
 
 //app.MapDelete("/api/Genre/{id:int}", async (IGenreRepository repository, int id) =>
 //{
-  
+
 //    await repository.DeleteAsync(id);
 //    return Results.Ok();
 //});
 
+app.MapControllers();
 app.Run();
 

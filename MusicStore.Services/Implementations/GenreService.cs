@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace MusicStore.Services.Implementations
 {
-    internal class GenreService : IGenreService
+    public class GenreService : IGenreService
     {
         private readonly IGenreRepository _repository;
         private readonly ILogger<GenreService> _logger;//Bitacora
@@ -34,7 +34,7 @@ namespace MusicStore.Services.Implementations
                     Status = request.Status,
                 };
 
-                var data = await _repository.AddAsync(registro);
+                response.Data = await _repository.AddAsync(registro);
                 response.Success= true;
             }
             catch (Exception ex)
@@ -101,7 +101,7 @@ namespace MusicStore.Services.Implementations
             try
             {
                 var data = await _repository.ListAsync();
-
+                //pedimos los campos de la colección original utilizando GenreDtoResponse
                 response.Data = data.Select(p => new GenreDtoResponse
                 {
                     Id = p.Id,

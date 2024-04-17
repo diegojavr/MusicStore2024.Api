@@ -8,7 +8,7 @@ using MusicStore.Services.Interfaces;
 namespace MusicStore.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller")]
+    [Route("api/[controller]")]
     public class GenresController: ControllerBase
     {
         private readonly IGenreService _service;
