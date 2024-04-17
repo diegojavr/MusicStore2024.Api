@@ -41,7 +41,7 @@ namespace MusicStore.Repositories.Implementations
             }
             else
             {
-                throw new InvalidOperationException($"No se encontró el registro en el Id {id}");
+                throw new InvalidOperationException($"No se encontró el registro con el Id {id}");
             }
         }
 

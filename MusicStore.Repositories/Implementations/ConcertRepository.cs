@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using MusicStore.Domain;
 using MusicStore.Domain.Info;
 using MusicStore.Persistence;
@@ -27,7 +28,7 @@ namespace MusicStore.Repositories.Implementations
         public async Task<(ICollection<ConcertInfo> Collection, int Total)> ListAsync(string? filter, int page, int rows)
         {
             Expression<Func<Concert, bool>> predicate = p => p.Status && p.Title.Contains(filter ?? string.Empty);
-            Expression<Func<Concert, string>> orderBy = p => p.Title;
+            Expression<Func<Concert, string>> orderBy = p => p.Title; //ordena alfabeticamente el listado de conciertos
             //Expression<Func<Concert, ConcertInfo>> selector= p => _mapper.Map<ConcertInfo>(p);
             //eager loading
 
@@ -59,6 +60,14 @@ namespace MusicStore.Repositories.Implementations
                 TicketsQuantity = p.TicketsQuantity,
                 ImageUrl = p.ImageUrl,
             }, orderBy, page, rows);
+
+            
+        }
+        public override async Task<Concert?> FindByIdAsync(int id)
+        {
+            return await Context.Set<Concert>()
+                .Include(p => p.Genre)
+                .FirstOrDefaultAsync(p=> p.Id == id);
         }
     }
 }

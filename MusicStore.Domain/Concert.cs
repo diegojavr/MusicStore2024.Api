@@ -12,7 +12,7 @@ namespace MusicStore.Domain
         public required string Description { get; set; }
         public required string Place { get; set; }
         public decimal UnitPrice { get; set; }
-        public required Genre Genre { get; set; }
+        public Genre Genre { get; set; } = default!;
         public int GenreId { get; set; }//Entity Framework ya la define como un nuevo id dentro de concert en la BD
         public DateTime DateEvent { get; set; }
         public string? ImageUrl { get; set; }

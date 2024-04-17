@@ -11,14 +11,12 @@ namespace MusicStore.Services.Interfaces
     public interface IConcertService
     {
         Task<BaseResponsePagination<ConcertDtoResponse>> ListAsync(string? filter, int page, int rows);
-        //Task<BaseResponseGeneric<ICollection<GenreDtoResponse>>> ListAsync();
 
+        Task<BaseResponseGeneric<ConcertDtoResponse>> FindByIdAsync(int id);
 
-        //Task<BaseResponseGeneric<GenreDtoResponse>> FindByIdAsync(int id);
-
-        //Task<BaseResponseGeneric<int>> AddAsync(GenreDtoRequest request);
-        //Task<BaseResponse> UpdateAsync(int id, GenreDtoRequest request);
-        //Task<BaseResponse> DeleteAsync(int id);
+        Task<BaseResponseGeneric<int>> AddAsync(ConcertDtoRequest request);
+        Task<BaseResponse> UpdateAsync(int id, ConcertDtoRequest request);
+        Task<BaseResponse> DeleteAsync(int id);
 
     }
 }
