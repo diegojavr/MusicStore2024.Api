@@ -11,9 +11,21 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicStore.Repositories", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicStore.Persistence", "..\MusicStore.Persistence\MusicStore.Persistence.csproj", "{66D438A2-3817-442C-B4D0-C528DB8CFBB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicStore.Services", "..\MusicStore.Services\MusicStore.Services.csproj", "{98775AE3-631D-4A3D-913F-1A66C7877B6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicStore.Services", "..\MusicStore.Services\MusicStore.Services.csproj", "{98775AE3-631D-4A3D-913F-1A66C7877B6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicStore.Dto", "..\MusicStore.Dto\MusicStore.Dto.csproj", "{A291783C-C1F2-4D7B-8BA3-2921088EF14A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicStore.Dto", "..\MusicStore.Dto\MusicStore.Dto.csproj", "{A291783C-C1F2-4D7B-8BA3-2921088EF14A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00. Entidades", "00. Entidades", "{51893398-D9C3-4D5B-9AC5-12C2449DD0B0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01. Acceso a datos", "01. Acceso a datos", "{22523904-4DCB-4E1D-BBAE-7421F2A17A13}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02. Logica de negocio", "02. Logica de negocio", "{CB0C85EB-2A27-416A-B293-B7608CA74A6A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03. API REST", "03. API REST", "{8F80D9DD-7DAC-48B0-808B-DB4C2B5BAE76}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. HealthChecks", "04. HealthChecks", "{480EB7F3-7F68-4E40-B50D-4DD32BE5D3B8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "05. Pruebas unitarias", "05. Pruebas unitarias", "{459F7D33-C482-4087-9071-4A5F7148A024}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +60,14 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{78438E63-A43B-4BFF-AEF8-F75F27674036} = {8F80D9DD-7DAC-48B0-808B-DB4C2B5BAE76}
+		{CD5F1BD9-78D2-4FB9-A79E-58B3113177A1} = {51893398-D9C3-4D5B-9AC5-12C2449DD0B0}
+		{943B7788-645E-47B6-8ED0-92E383BA8BAA} = {22523904-4DCB-4E1D-BBAE-7421F2A17A13}
+		{66D438A2-3817-442C-B4D0-C528DB8CFBB9} = {22523904-4DCB-4E1D-BBAE-7421F2A17A13}
+		{98775AE3-631D-4A3D-913F-1A66C7877B6F} = {CB0C85EB-2A27-416A-B293-B7608CA74A6A}
+		{A291783C-C1F2-4D7B-8BA3-2921088EF14A} = {CB0C85EB-2A27-416A-B293-B7608CA74A6A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D56801A9-AC5A-4A62-8F86-BE9574F35A28}
