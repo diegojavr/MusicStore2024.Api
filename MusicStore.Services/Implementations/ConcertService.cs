@@ -30,9 +30,7 @@ namespace MusicStore.Services.Implementations
             try
             {
                 var tupla = await _repository
-                    .ListAsync(predicate: p => p.Status && p.Title.Contains(filter ?? string.Empty),
-                    selector: p => _mapper.Map<ConcertInfo>(p),
-                    orderBy: p => p.Title, page, rows);
+                    .ListAsync(filter, page, rows);
 
                 var total = tupla.Total / rows;
                 if (tupla.Total % rows > 0)

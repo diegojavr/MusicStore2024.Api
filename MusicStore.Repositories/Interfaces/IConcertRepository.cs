@@ -1,4 +1,5 @@
 ﻿using MusicStore.Domain;
+using MusicStore.Domain.Info;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace MusicStore.Repositories.Interfaces
 {
     public interface IConcertRepository : IRepositoryBase<Concert>
     {
-
+        Task<(ICollection<ConcertInfo>Collection, int Total)> ListAsync(string? filter, int page, int rows);
     }
 }

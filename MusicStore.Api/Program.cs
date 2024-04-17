@@ -8,6 +8,7 @@ using MusicStore.Repositories.Interfaces;
 using MusicStore.Services.Interfaces;
 using MusicStore.Services.Implementations;
 using MusicStore.Services.Profiles;
+using MusicStore.Repositories.DataProfile;
 
 var builder = WebApplication.CreateBuilder(args); //Crea puerto de desarrollo para la aplicacion web
 
@@ -28,7 +29,8 @@ builder.Services.AddTransient<IConcertService, ConcertService>();
 
 builder.Services.AddAutoMapper(config =>
 {
-    config.AddProfile<ConcertProfile>(); 
+    config.AddProfile<ConcertProfile>();
+    config.AddProfile<DataProfile>(); //Profile de concert desde repositorio
 });
 
 builder.Services.AddControllers();
