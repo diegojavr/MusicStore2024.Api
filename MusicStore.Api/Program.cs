@@ -9,9 +9,11 @@ using MusicStore.Services.Interfaces;
 using MusicStore.Services.Implementations;
 using MusicStore.Services.Profiles;
 using MusicStore.Repositories.DataProfile;
+using MusicStore.Domain.Configuration;
 
 var builder = WebApplication.CreateBuilder(args); //Crea puerto de desarrollo para la aplicacion web
 
+builder.Services.Configure<AppConfig>(builder.Configuration);
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
@@ -26,6 +28,8 @@ builder.Services.AddTransient<IGenreRepository, GenreRepository>(); //Con base d
 builder.Services.AddTransient<IGenreService, GenreService>();
 builder.Services.AddTransient<IConcertRepository, ConcertRepository>(); //Con base de datos
 builder.Services.AddTransient<IConcertService, ConcertService>();
+builder.Services.AddTransient<IFileUploader, FileUploader>();
+
 
 builder.Services.AddAutoMapper(config =>
 {

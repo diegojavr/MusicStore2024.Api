@@ -19,12 +19,17 @@ namespace MusicStore.Services.Implementations
         private readonly IConcertRepository _repository;
         private readonly ILogger<ConcertService> _logger;
         private readonly IMapper _mapper;
+        private readonly IFileUploader _fileUploader;
 
-        public ConcertService(IConcertRepository repository, ILogger<ConcertService> logger, IMapper mapper)
+        public ConcertService(IConcertRepository repository, 
+            ILogger<ConcertService> logger, 
+            IMapper mapper,
+            IFileUploader fileUploader)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _fileUploader = fileUploader;
         }
 
         public async Task<BaseResponseGeneric<int>> AddAsync(ConcertDtoRequest request)
@@ -32,10 +37,11 @@ namespace MusicStore.Services.Implementations
             var response = new BaseResponseGeneric<int>();
             try
             {
-                var registro = _mapper.Map<Concert>(request);
-                // TODO: Funcionalidad de subir concierto
-                await _repository.AddAsync(registro);
-                response.Data = registro.Id;
+                var concert = _mapper.Map<Concert>(request);
+                //subida de archivo de imagen
+                concert.ImageUrl = await _fileUploader.UploadFileAsync(request.Base64Image,request.FileName);
+                await _repository.AddAsync(concert);
+                response.Data = concert.Id;
                 response.Success = true;
 
                 _logger.LogInformation("Concierto agregado con exito");
@@ -117,7 +123,7 @@ namespace MusicStore.Services.Implementations
                 }
                 _mapper.Map(request,concert);
                 if (!string.IsNullOrEmpty(request.FileName)) { 
-                // TODO: Agregar funcionalidad de cambio de imagen
+                concert.ImageUrl = await _fileUploader.UploadFileAsync(request.Base64Image, request.FileName);
                 }
 
                 await _repository.UpdateAsync(concert);
@@ -127,7 +133,7 @@ namespace MusicStore.Services.Implementations
             }
             catch (Exception ex)
             {
-                response.ErrorMessage = "Error al listar los conciertos";
+                response.ErrorMessage = "Error al actualizar el concierto";
                 _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
                
             }
