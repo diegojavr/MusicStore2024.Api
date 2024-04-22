@@ -28,8 +28,14 @@ builder.Services.AddTransient<IGenreRepository, GenreRepository>(); //Con base d
 builder.Services.AddTransient<IGenreService, GenreService>();
 builder.Services.AddTransient<IConcertRepository, ConcertRepository>(); //Con base de datos
 builder.Services.AddTransient<IConcertService, ConcertService>();
-builder.Services.AddTransient<IFileUploader, FileUploader>();
 
+//Si consigue el valor core.windows.net utiliza el uploader a Azure, sino será local
+if (builder.Configuration.GetSection("StorageConfiguration:Path").Value!.Contains("core.windows.net"))
+{
+    builder.Services.AddTransient<IFileUploader, AzureBlobStorageUploader>();
+}
+else
+    builder.Services.AddTransient<IFileUploader, FileUploader>();
 
 builder.Services.AddAutoMapper(config =>
 {
