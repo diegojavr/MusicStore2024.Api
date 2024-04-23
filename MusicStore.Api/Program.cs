@@ -10,6 +10,7 @@ using MusicStore.Services.Implementations;
 using MusicStore.Services.Profiles;
 using MusicStore.Repositories.DataProfile;
 using MusicStore.Domain.Configuration;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args); //Crea puerto de desarrollo para la aplicacion web
 
@@ -23,6 +24,28 @@ builder.Services.AddDbContext<MusicStoreDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MusicStoreDb"));
 
 });
+
+
+builder.Services.AddIdentity<MusicStoreUserIdentity, IdentityRole>(policies =>
+{
+    //Politicas de contraseña
+    policies.Password.RequireNonAlphanumeric = false;
+    policies.Password.RequireLowercase = false;
+    policies.Password.RequireUppercase = false;
+    policies.Password.RequireDigit = true;
+    policies.Password.RequiredLength = 6; //tamaño de 6
+
+    policies.User.RequireUniqueEmail = true; //un unico usuario para no tener duplicados
+
+    //Politicas de bloqueo de cuentas
+    policies.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10); //tiempo de 10 minutos para bloqueo de cuenta
+    policies.Lockout.MaxFailedAccessAttempts = 5;
+    policies.Lockout.AllowedForNewUsers = true; //nuevos usuarios tambien se bloquean de contraseña erronea
+
+}).AddEntityFrameworkStores<MusicStoreDbContext>()
+.AddDefaultTokenProviders();
+
+
 //builder.Services.AddSingleton<IGenreRepository,GenreRepository>(); //Solo localmente
 builder.Services.AddTransient<IGenreRepository, GenreRepository>(); //Con base de datos
 builder.Services.AddTransient<IGenreService, GenreService>();
