@@ -11,6 +11,9 @@ using MusicStore.Services.Profiles;
 using MusicStore.Repositories.DataProfile;
 using MusicStore.Domain.Configuration;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args); //Crea puerto de desarrollo para la aplicacion web
 
@@ -70,6 +73,31 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddAuthentication(x =>
+{
+    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x =>
+{
+    //SecretKey larga para convertir en un array de bytes
+    //?? si no está configurado, lanza InvalidOperationException
+    var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"] ??
+        throw new InvalidOperationException("No se configuró el JWT"));
+
+    //validar token
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true, //valida emisor
+        ValidateAudience = true, //valida audiencia, a quien esta dirigido
+        ValidateLifetime = true, //valida duracion del token
+        ValidateIssuerSigningKey = true, //valida la llave que yo especifico
+        ValidIssuer = builder.Configuration["Jwt:Emisor"], //emisor autorizado del archivo de configuracion
+        ValidAudience = builder.Configuration["Jwt:Audiencia"], //audiencia autorizada del archivo de configuracion
+        IssuerSigningKey = new SymmetricSecurityKey(key) //tipo de seguridad para la llave
+    
+    };
+});
+
 var app = builder.Build();
 
 
@@ -84,43 +112,17 @@ if (app.Environment.IsDevelopment()) //este muestra el swagger
 app.UseHttpsRedirection();
 
 
+app.UseAuthentication();
+app.UseAuthorization();
 
-//Aqui mapeamos los endpoints de la aplicaciones
-//app.MapGet("/api/Genres", async (IGenreRepository repository) =>
-//  Results.Ok(await repository.ListAsync()));
-
-//app.MapPost("/api/Genres", async (IGenreRepository repository, Genre request) =>
-//{
-//    var response = await repository.AddAsync(request);
-//    return Results.Ok(new
-//    {
-//        Id = response
-//    });
-
-//});
-
-//app.MapGet("/api/Genres/{id:int}", async (IGenreRepository repository, int id) =>
-//{
-//    var registro = await repository.FindByIdAsync(id);
-//    return registro is null ? Results.NotFound() : Results.Ok(registro);
-//});
-//app.MapPut("/api/Genres/{id:int}", async (IGenreRepository repository, int id, Genre request) =>
-//{
-//    var registro = await repository.FindByIdAsync(id);
-//    if (registro is null)
-//        return Results.NotFound();
-//    registro.Name = request.Name;
-//    await repository.UpdateAsync(registro);
-//    return Results.Ok();
-//});
-
-//app.MapDelete("/api/Genre/{id:int}", async (IGenreRepository repository, int id) =>
-//{
-
-//    await repository.DeleteAsync(id);
-//    return Results.Ok();
-//});
 
 app.MapControllers();
+
+//solo aqui se crean instancias
+using (var scope = app.Services.CreateScope())
+{
+    //Ejecutamos la creacion del usuario admin y roles por default
+    await UserDataSeeder.Seed(scope.ServiceProvider);
+}
 app.Run();
 
