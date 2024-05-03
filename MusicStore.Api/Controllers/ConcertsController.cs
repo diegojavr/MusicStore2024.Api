@@ -10,6 +10,7 @@ namespace MusicStore.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ConcertsController : ControllerBase
     {
         private readonly IConcertService _service;
@@ -18,7 +19,7 @@ namespace MusicStore.Api.Controllers
             _service = service;
         }
         [HttpGet]
-        [Authorize(Roles =Constantes.RolAdmin)]
+        [AllowAnonymous]
         public async Task<IActionResult> Get(string? filter, int page = 1, int rows = 5)
         {
             
@@ -34,6 +35,7 @@ namespace MusicStore.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Constantes.RolAdmin)]
         public async Task<IActionResult> Post([FromBody] ConcertDtoRequest request)
         {
             var response = await _service.AddAsync(request);
@@ -41,12 +43,14 @@ namespace MusicStore.Api.Controllers
 
         }
         [HttpPut("{id:int}")]
+        [Authorize(Roles = Constantes.RolAdmin)]
         public async Task<IActionResult> Put(int id, [FromBody] ConcertDtoRequest request)
         {
             var response = await _service.UpdateAsync(id, request);
             return response.Success ? Ok(response) : BadRequest(response);
         }
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = Constantes.RolAdmin)]
         public async Task<IActionResult> Delete(int id)
         {
             var response = await _service.DeleteAsync(id);

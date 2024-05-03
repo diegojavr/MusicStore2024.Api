@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Build.Framework;
+using MusicStore.Domain;
 using MusicStore.Dto.Request;
 using MusicStore.Dto.Response;
 using MusicStore.Repositories.Interfaces;
@@ -9,6 +11,7 @@ namespace MusicStore.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class GenresController: ControllerBase
     {
         private readonly IGenreService _service;
@@ -19,6 +22,7 @@ namespace MusicStore.Api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
             return Ok(await _service.ListAsync());
@@ -32,6 +36,7 @@ namespace MusicStore.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Constantes.RolAdmin)]
         public async Task<IActionResult> Post([FromBody] GenreDtoRequest request)
         { 
             var response = await _service.AddAsync(request);
@@ -39,6 +44,7 @@ namespace MusicStore.Api.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = Constantes.RolAdmin)]
         public async Task<IActionResult> Put(int id, [FromBody] GenreDtoRequest request)
         {
             var response = await _service.UpdateAsync(id,request);
@@ -47,6 +53,7 @@ namespace MusicStore.Api.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = Constantes.RolAdmin)]
         public async Task<IActionResult> Delete(int id)
         {
             var response = await _service.DeleteAsync(id);
