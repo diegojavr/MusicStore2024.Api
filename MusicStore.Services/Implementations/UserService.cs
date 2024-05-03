@@ -2,10 +2,12 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using MusicStore.Domain;
 using MusicStore.Domain.Configuration;
 using MusicStore.Dto.Request;
 using MusicStore.Dto.Response;
 using MusicStore.Persistence;
+using MusicStore.Repositories.Interfaces;
 using MusicStore.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -21,14 +23,18 @@ namespace MusicStore.Services.Implementations
     public class UserService : IUserService
     {
         private readonly UserManager<MusicStoreUserIdentity> _userManager;
-        private readonly ILogger _logger;
+        private readonly ILogger<UserService> _logger;
         private readonly AppConfig _appConfig;
+        private readonly ICustomerRepository _repository;
 
-        public UserService(UserManager<MusicStoreUserIdentity> userManager, ILogger logger, IOptions<AppConfig> options)
+        public UserService(UserManager<MusicStoreUserIdentity> userManager, ILogger<UserService> logger, IOptions<AppConfig> options, ICustomerRepository repository)
         {
             _userManager = userManager;
             _logger = logger;
             _appConfig = options.Value;
+            _repository = repository;
+
+
         }
         public async Task<LoginDtoResponse> LoginAsync(LoginDtoRequest request)
         {
@@ -43,7 +49,7 @@ namespace MusicStore.Services.Implementations
                 }
 
                 //Verificamos que no esté bloqueado el usuario
-                if(await _userManager.IsLockedOutAsync(identity))
+                if (await _userManager.IsLockedOutAsync(identity))
                 {
                     throw new SecurityException($"Demasiados intentos fallidos para el usuario {identity.UserName}");
                 }
@@ -54,8 +60,9 @@ namespace MusicStore.Services.Implementations
                 {
                     response.Success = false;
                     response.ErrorMessage = "Clave incorrecta";
-                    _logger.LogWarning($"Error de autenticación para el usuario {request.UserName}");
+                    _logger.LogWarning("Error de autenticación para el usuario {UserName}", request.UserName);
                     await _userManager.AccessFailedAsync(identity);
+
                     return response;
                 }
 
@@ -76,27 +83,31 @@ namespace MusicStore.Services.Implementations
                 }
                 response.Roles = new List<string>();
                 response.Roles.AddRange(roles);
+                await _userManager.ResetAccessFailedCountAsync(identity);
 
 
+
+                //JWT 
                 //Creacion del JWT
                 var symmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appConfig.Jwt.SecretKey));
 
                 //Credenciales codificados en HmacSha256
-                var credentials = new SigningCredentials(symmetricKey,SecurityAlgorithms.HmacSha256);
+                var credentials = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256);
                 //Header, encabezado
                 var header = new JwtHeader(credentials);
                 //Parte del medio del token
                 var payload = new JwtPayload(
-                    _appConfig.Jwt.Emisor, 
+                    _appConfig.Jwt.Emisor,
                     _appConfig.Jwt.Audiencia,
-                    claims, 
+                    claims,
                     notBefore: DateTime.Now,//momento de creacion del token
                     expires: expiredDate);
 
+                //Unificacion del token
                 var token = new JwtSecurityToken(header, payload);
                 response.Token = new JwtSecurityTokenHandler().WriteToken(token); //me devuelve el token como un string
                 response.FullName = $"{identity.FirstName} {identity.LastName}";
-                response.Success = true ;
+                response.Success = true;
 
 
             }
@@ -109,9 +120,70 @@ namespace MusicStore.Services.Implementations
             return response;
         }
 
-        public Task<BaseResponseGeneric<string>> RegisterAsync(RegisterDtoRequest request)
+        public async Task<BaseResponseGeneric<string>> RegisterAsync(RegisterDtoRequest request)
         {
-            throw new NotImplementedException();
+            var response = new BaseResponseGeneric<string>();
+            try
+            {
+                var user = new MusicStoreUserIdentity()
+                {
+                    UserName = request.Email,
+                    Email = request.Email,
+                    FirstName = request.FirstName,
+                    LastName = request.LastName,
+                    Age = request.Age,
+                    DocumentNumber = request.DocumentNumber,
+                    DocumentType = (DocumentTypeEnum)request.DocumentType,
+                    EmailConfirmed = true
+                };
+                //enviamos instancia de creacion de usuario y contraseña de confirmación
+                var result = await _userManager.CreateAsync(user, request.ConfirmPassword);
+                if (result.Succeeded)
+                {
+                    var userIdentity = await _userManager.FindByEmailAsync(request.Email);
+                    if (userIdentity != null)
+                    {
+                        //Esto es para antes de crear el usuario, ya tenga un rol asignado
+                        await _userManager.AddToRoleAsync(userIdentity, Constantes.RolCustomer);
+
+                        //Crear objeto de usuario encontrado
+                        var customer = new Customer()
+                        {
+                            Email = request.Email,
+                            FullName = $"{request.FirstName} {request.LastName}"
+
+                        };
+                        //Agrega customer si fue encontrado correctamente
+                        await _repository.AddAsync(customer);
+
+                        //Enviar email de bienvenida o de confirmación
+                        //
+
+                        response.Success = true;
+                        response.Data = userIdentity.Id;
+                    }
+                }
+                //Si el usuairo no cumple politicas, o ya existe, etc
+                else
+                {
+                    response.Success = false;
+                    //Creamos un StringBuilder para concatenar todos los errores posibles
+                    var sb = new StringBuilder();
+                    foreach (var error in result.Errors)
+                    {
+                        sb.AppendLine(error.Description);
+                    }
+                    response.ErrorMessage = sb.ToString();
+                    sb.Clear(); //Limpiamos memoria de errores de sb
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = "Error al registrar el usuario";
+                _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+                throw;
+            }
+            return response;
         }
     }
 }

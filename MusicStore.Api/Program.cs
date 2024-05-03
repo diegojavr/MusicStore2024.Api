@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args); //Crea puerto de desarrollo para la aplicacion web
 
@@ -25,6 +26,10 @@ builder.Services.Configure<AppConfig>(builder.Configuration);
 builder.Services.AddDbContext<MusicStoreDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("MusicStoreDb"));
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableSensitiveDataLogging();
+    }
 
 });
 
@@ -54,6 +59,9 @@ builder.Services.AddTransient<IGenreRepository, GenreRepository>(); //Con base d
 builder.Services.AddTransient<IGenreService, GenreService>();
 builder.Services.AddTransient<IConcertRepository, ConcertRepository>(); //Con base de datos
 builder.Services.AddTransient<IConcertService, ConcertService>();
+builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<ICustomerRepository, CustomerRepository>();   
+
 
 //Si consigue el valor core.windows.net utiliza el uploader a Azure, sino será local
 if (builder.Configuration.GetSection("StorageConfiguration:Path").Value!.Contains("core.windows.net"))
@@ -71,7 +79,33 @@ builder.Services.AddAutoMapper(config =>
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo() { Title = "Music Store API", Version = "v1" });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Description = "Autenticacion por JWT usando como ejemplo en el header: Authorization: Bearer [token]",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+        new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type=ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+        },
+        Array.Empty<string>()
+        }
+    });
+});
 
 builder.Services.AddAuthentication(x =>
 {
@@ -94,7 +128,7 @@ builder.Services.AddAuthentication(x =>
         ValidIssuer = builder.Configuration["Jwt:Emisor"], //emisor autorizado del archivo de configuracion
         ValidAudience = builder.Configuration["Jwt:Audiencia"], //audiencia autorizada del archivo de configuracion
         IssuerSigningKey = new SymmetricSecurityKey(key) //tipo de seguridad para la llave
-    
+
     };
 });
 
