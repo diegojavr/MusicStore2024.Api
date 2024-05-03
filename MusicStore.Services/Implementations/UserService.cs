@@ -76,7 +76,7 @@ namespace MusicStore.Services.Implementations
                     new Claim(ClaimTypes.Expiration, expiredDate.ToString("yyyy-MM-dd HH:mm:ss")),
                 };
 
-                //Devuelve roles a la lista claims
+                //Devuelve roles a la lista claims, asigna el rol para el token
                 foreach (var role in roles)
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role));

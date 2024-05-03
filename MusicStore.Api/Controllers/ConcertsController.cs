@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MusicStore.Domain;
 using MusicStore.Dto.Request;
 using MusicStore.Services.Interfaces;
+using System.Security.Claims;
 
 namespace MusicStore.Api.Controllers
 {
@@ -16,9 +18,10 @@ namespace MusicStore.Api.Controllers
             _service = service;
         }
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles =Constantes.RolAdmin)]
         public async Task<IActionResult> Get(string? filter, int page = 1, int rows = 5)
         {
+            
             var response = await _service.ListAsync(filter, page, rows);
             return Ok(response);
         }
