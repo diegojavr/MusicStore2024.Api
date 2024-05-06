@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MusicStore.Services;
 
 var builder = WebApplication.CreateBuilder(args); //Crea puerto de desarrollo para la aplicacion web
 
@@ -53,23 +54,11 @@ builder.Services.AddIdentity<MusicStoreUserIdentity, IdentityRole>(policies =>
 }).AddEntityFrameworkStores<MusicStoreDbContext>()
 .AddDefaultTokenProviders();
 
+//Conexion de los servicios y repositorios desde DependencyInjection.cs
+builder.Services.AddRepositories()
+    .AddServices()
+    .AddUploader(builder.Configuration);
 
-//builder.Services.AddSingleton<IGenreRepository,GenreRepository>(); //Solo localmente
-builder.Services.AddTransient<IGenreRepository, GenreRepository>(); //Con base de datos
-builder.Services.AddTransient<IGenreService, GenreService>();
-builder.Services.AddTransient<IConcertRepository, ConcertRepository>(); //Con base de datos
-builder.Services.AddTransient<IConcertService, ConcertService>();
-builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<ICustomerRepository, CustomerRepository>();   
-
-
-//Si consigue el valor core.windows.net utiliza el uploader a Azure, sino será local
-if (builder.Configuration.GetSection("StorageConfiguration:Path").Value!.Contains("core.windows.net"))
-{
-    builder.Services.AddTransient<IFileUploader, AzureBlobStorageUploader>();
-}
-else
-    builder.Services.AddTransient<IFileUploader, FileUploader>();
 
 builder.Services.AddAutoMapper(config =>
 {
