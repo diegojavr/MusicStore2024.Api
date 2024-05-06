@@ -217,7 +217,6 @@ namespace MusicStore.Services.Implementations
             try
             {
                 var userIdentity = await _userManager.FindByEmailAsync(request.Email);
-                if (userIdentity == null)
                 {
                     throw new SecurityException("Usuario no existe");
                 }
