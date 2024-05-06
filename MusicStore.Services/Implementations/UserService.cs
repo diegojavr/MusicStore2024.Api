@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using MusicStore.Domain;
 using MusicStore.Domain.Configuration;
@@ -184,6 +185,70 @@ namespace MusicStore.Services.Implementations
                 throw;
             }
             return response;
+        }
+
+        public async Task<BaseResponseGeneric<string>> RequestTokenToResetPasswordAsync(ResetPasswordDtoRequest request)
+        {
+            var response = new BaseResponseGeneric<string>();
+            try
+            {
+                var userIdentity = await _userManager.FindByEmailAsync(request.Email); 
+                if (userIdentity == null)
+                {
+                    throw new SecurityException("Usuario no existe");
+                }
+                var token = await _userManager.GeneratePasswordResetTokenAsync(userIdentity);
+                //TODO: enviar un email con el token para reseteo de contraseña
+                response.Data = token;
+                response.Success = true;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = "Error al solicitar el token para resetear la clave";
+                _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+                
+            }
+
+            return response;
+        }
+        public async Task<BaseResponse> ResetPasswordAsync(ConfirmPasswordDtoRequest request)
+        {
+            var response = new BaseResponse();
+            try
+            {
+                var userIdentity = await _userManager.FindByEmailAsync(request.Email);
+                if (userIdentity == null)
+                {
+                    throw new SecurityException("Usuario no existe");
+                }
+                var result = await _userManager.ResetPasswordAsync(userIdentity, request.Token, request.ConfirmPassword);
+                response.Success = result.Succeeded;
+
+                if (!result.Succeeded)
+                {
+                    //Creamos un StringBuilder para concatenar todos los errores posibles
+                    var sb = new StringBuilder();
+                    foreach (var error in result.Errors)
+                    {
+                        sb.AppendLine(error.Description);
+                    }
+                    response.ErrorMessage = sb.ToString();
+                    sb.Clear(); //Limpiamos memoria de errores de sb}
+
+
+                }
+                else
+                {
+                    //TODO: enviar email de confirmacion de clave cambiada
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = "Error al resetear la clave";
+                _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+            }
+
+                return response;
         }
     }
 }

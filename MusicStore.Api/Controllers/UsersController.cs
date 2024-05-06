@@ -30,5 +30,19 @@ namespace MusicStore.Api.Controllers
             var response = await _service.RegisterAsync(request);
             return response.Success? Ok(response): BadRequest(response);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> RequestTokenToResetPassword (ResetPasswordDtoRequest request)
+        {
+            var response = await _service.RequestTokenToResetPasswordAsync(request);
+            return response.Success ? Ok(response) : BadRequest(response); 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ConfirmPasswordDtoRequest request)
+        {
+            var response = await _service.ResetPasswordAsync(request);
+            return response.Success ? Ok(response) : BadRequest(response);
+        }
     }
 }
