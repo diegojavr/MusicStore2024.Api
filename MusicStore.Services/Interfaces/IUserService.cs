@@ -12,7 +12,8 @@ namespace MusicStore.Services.Interfaces
     {
         Task<LoginDtoResponse> LoginAsync(LoginDtoRequest request);
         Task<BaseResponseGeneric<string>> RegisterAsync(RegisterDtoRequest request);
-        Task<BaseResponseGeneric<string>> RequestTokenToResetPasswordAsync(ResetPasswordDtoRequest request);
+        Task<BaseResponse> RequestTokenToResetPasswordAsync(ResetPasswordDtoRequest request);
         Task<BaseResponse> ResetPasswordAsync(ConfirmPasswordDtoRequest request);
+        Task<BaseResponse> ChangePasswordAsync(string email, ChangePasswordDtoRequest request);
     }
 }

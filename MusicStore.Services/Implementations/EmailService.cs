@@ -19,26 +19,26 @@ namespace MusicStore.Services.Implementations
 
         public EmailService(IOptions<AppConfig> options, ILogger<EmailService> logger)
         {
-            _smtp=options.Value.SmtpConfiguration;
-            _logger=logger;
+            _smtp = options.Value.SmtpConfiguration;
+            _logger = logger;
         }
         public async Task SendEmailAsync(string email, string subject, string message)
         {
             try
             {
-                var mailMessage = new MailMessage(new MailAddress(_smtp.UserName, _smtp.FromName),new MailAddress(email));
+                var mailMessage = new MailMessage(new MailAddress(_smtp.UserName, _smtp.FromName), new MailAddress(email));
                 mailMessage.Subject = subject;
                 mailMessage.Body = message;
                 mailMessage.IsBodyHtml = true;
 
                 using var smtpClient = new SmtpClient(_smtp.Server, _smtp.PortNumber)//envia servidor y numero de puerto
                 {
-                    Credentials=new NetworkCredential(_smtp.UserName,_smtp.Password), //configura credenciales de red
-                    EnableSsl=_smtp.EnableSsl,
+                    Credentials = new NetworkCredential(_smtp.UserName, _smtp.Password), //configura credenciales de red
+                    EnableSsl = _smtp.EnableSsl,
                 };
 
                 await smtpClient.SendMailAsync(mailMessage);
-                _logger.LogInformation("Se envió correctamente el correo a {email}",email);
+                _logger.LogInformation("Se envió correctamente el correo a {email}", email);
             }
             catch (SmtpException ex)
             {

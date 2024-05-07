@@ -27,13 +27,15 @@ namespace MusicStore.Services.Implementations
         private readonly ILogger<UserService> _logger;
         private readonly AppConfig _appConfig;
         private readonly ICustomerRepository _repository;
+        private readonly IEmailService _emailService;
 
-        public UserService(UserManager<MusicStoreUserIdentity> userManager, ILogger<UserService> logger, IOptions<AppConfig> options, ICustomerRepository repository)
+        public UserService(UserManager<MusicStoreUserIdentity> userManager, ILogger<UserService> logger, IOptions<AppConfig> options, ICustomerRepository repository, IEmailService emailService)
         {
             _userManager = userManager;
             _logger = logger;
             _appConfig = options.Value;
             _repository = repository;
+            _emailService = emailService;
 
 
         }
@@ -74,6 +76,7 @@ namespace MusicStore.Services.Implementations
                 var claims = new List<Claim>()
                 {
                     new Claim(ClaimTypes.Name, request.UserName),
+                    new Claim(ClaimTypes.Email, request.UserName),
                     new Claim(ClaimTypes.Expiration, expiredDate.ToString("yyyy-MM-dd HH:mm:ss")),
                 };
 
@@ -157,14 +160,21 @@ namespace MusicStore.Services.Implementations
                         //Agrega customer si fue encontrado correctamente
                         await _repository.AddAsync(customer);
 
-                        //Enviar email de bienvenida o de confirmación
-                        //
+                        //Envío de correo al crear una cuenta nueva
+                        await _emailService.SendEmailAsync(request.Email, $"Creacion de cuenta para {customer.FullName}",
+                            @$"
+                               <p>Estimado {customer.FullName}</p>
+                                  <p> Se ha creado su cuenta en la tienda de musica</p>
+                                  <p> Su usuario es: {request.Email}</p>
+                                  <hr />
+                                  Atte. <br />
+                                  Music Store 2024");
 
                         response.Success = true;
                         response.Data = userIdentity.Id;
                     }
                 }
-                //Si el usuairo no cumple politicas, o ya existe, etc
+                //Si el usuario no cumple politicas, o ya existe, etc
                 else
                 {
                     response.Success = false;
@@ -187,26 +197,32 @@ namespace MusicStore.Services.Implementations
             return response;
         }
 
-        public async Task<BaseResponseGeneric<string>> RequestTokenToResetPasswordAsync(ResetPasswordDtoRequest request)
+        public async Task<BaseResponse> RequestTokenToResetPasswordAsync(ResetPasswordDtoRequest request)
         {
-            var response = new BaseResponseGeneric<string>();
+            var response = new BaseResponse();
             try
             {
-                var userIdentity = await _userManager.FindByEmailAsync(request.Email); 
+                var userIdentity = await _userManager.FindByEmailAsync(request.Email);
                 if (userIdentity == null)
                 {
                     throw new SecurityException("Usuario no existe");
                 }
                 var token = await _userManager.GeneratePasswordResetTokenAsync(userIdentity);
-                //TODO: enviar un email con el token para reseteo de contraseña
-                response.Data = token;
+                await _emailService.SendEmailAsync(request.Email, "Restablecer clave",
+                            @$"
+                               <p>Estimado {userIdentity.FirstName} {userIdentity.LastName}</p>
+                                  <p> Para restablecer su clave, por favor copie el siguiente token:</p>
+                                  <p><strong>{token}</strong></p>
+                                  <hr />
+                                  Atte. <br />
+                                  Music Store 2024");
                 response.Success = true;
             }
             catch (Exception ex)
             {
                 response.ErrorMessage = "Error al solicitar el token para resetear la clave";
                 _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
-                
+
             }
 
             return response;
@@ -217,9 +233,11 @@ namespace MusicStore.Services.Implementations
             try
             {
                 var userIdentity = await _userManager.FindByEmailAsync(request.Email);
+                if (userIdentity == null)
                 {
                     throw new SecurityException("Usuario no existe");
                 }
+
                 var result = await _userManager.ResetPasswordAsync(userIdentity, request.Token, request.ConfirmPassword);
                 response.Success = result.Succeeded;
 
@@ -238,7 +256,14 @@ namespace MusicStore.Services.Implementations
                 }
                 else
                 {
-                    //TODO: enviar email de confirmacion de clave cambiada
+                    await _emailService.SendEmailAsync(request.Email, "Confirmacion de cambio de clave",
+                            @$"
+                               <p>Estimado {userIdentity.FirstName} {userIdentity.LastName}</p>
+                                 
+                                  <p>Se ha cambiado su clave correctamente</p>
+                                  <hr />
+                                  Atte. <br />
+                                  Music Store 2024");
                 }
             }
             catch (Exception ex)
@@ -247,7 +272,53 @@ namespace MusicStore.Services.Implementations
                 _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
             }
 
-                return response;
+            return response;
+        }
+
+        public async Task<BaseResponse> ChangePasswordAsync(string email, ChangePasswordDtoRequest request)
+        {
+            var response = new BaseResponse();
+            try
+            {
+                var userIdentity = await _userManager.FindByEmailAsync(email);
+                if (userIdentity == null)
+                {
+                    throw new SecurityException("Usuario no existe");
+                }
+                var result = await _userManager.ChangePasswordAsync(userIdentity, request.OldPassword, request.NewPassword);
+                response.Success = result.Succeeded;
+
+                if (!result.Succeeded)
+                {
+                    //Creamos un StringBuilder para concatenar todos los errores posibles
+                    var sb = new StringBuilder();
+                    foreach (var error in result.Errors)
+                    {
+                        sb.AppendLine(error.Description);
+                    }
+                    response.ErrorMessage = sb.ToString();
+                    sb.Clear(); //Limpiamos memoria de errores de sb}
+                }
+                else
+                {
+                    _logger.LogInformation("Se cambió la clave para {email}", userIdentity.Email);
+                    await _emailService.SendEmailAsync(email, "Confirmacion de cambio de clave",
+                            @$"
+                               <p>Estimado {userIdentity.FirstName} {userIdentity.LastName}</p>
+                                 
+                                  <p>Se ha cambiado su clave correctamente</p>
+                                  <hr />
+                                  Atte. <br />
+                                  Music Store 2024");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = "Error al resetear la clave";
+                _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+            }
+            return response;
         }
     }
 }
