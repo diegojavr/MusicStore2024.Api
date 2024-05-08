@@ -104,7 +104,7 @@ namespace MusicStore.Repositories.Implementations
             if (entity != null)
             {
                 entity.ModifiedDate = DateTime.Now;
-                await UpdateAsync();
+
             }
             await Context.SaveChangesAsync();
         }

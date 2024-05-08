@@ -11,13 +11,27 @@ using MusicStore.Services;
 using Serilog;
 using MusicStore.Domain.Configuration;
 using Serilog.Events;
+using Serilog.Sinks.MSSqlServer;
 
 var builder = WebApplication.CreateBuilder(args); //Crea puerto de desarrollo para la aplicacion web
 
 //Serilog
 //Crea el logger para escribir dentro de Console
+//MSSqlServerSinkOptions para configurar que no se guarden todos los logs posibles, sino sería muy pesado y afecta rendimiento
 var logger = new LoggerConfiguration()
     .WriteTo.Console(LogEventLevel.Information)
+    .WriteTo.File("..\\log.txt",
+    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] - {Message}{NewLine}{Exception}",
+    rollingInterval: RollingInterval.Day,
+    restrictedToMinimumLevel: LogEventLevel.Warning)
+    .WriteTo.MSSqlServer(builder.Configuration.GetConnectionString("MusicStoreDb"),
+    new MSSqlServerSinkOptions
+    {
+        AutoCreateSqlDatabase = true, //crea bd si no existe
+        AutoCreateSqlTable = true, //crea tabla si no existe
+        TableName = "ApiLogs" //nombre de la tabla
+
+    }, restrictedToMinimumLevel: LogEventLevel.Warning)
     .CreateLogger();
 builder.Logging.AddSerilog(logger);
 
