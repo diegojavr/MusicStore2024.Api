@@ -1,23 +1,26 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Win32;
-using MusicStore.Api.Controllers;
-using MusicStore.Domain;
 using MusicStore.Persistence;
-using MusicStore.Repositories.Implementations;
-using MusicStore.Repositories.Interfaces;
-using MusicStore.Services.Interfaces;
-using MusicStore.Services.Implementations;
 using MusicStore.Services.Profiles;
 using MusicStore.Repositories.DataProfile;
-using MusicStore.Domain.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MusicStore.Services;
+using Serilog;
+using MusicStore.Domain.Configuration;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args); //Crea puerto de desarrollo para la aplicacion web
+
+//Serilog
+//Crea el logger para escribir dentro de Console
+var logger = new LoggerConfiguration()
+    .WriteTo.Console(LogEventLevel.Information)
+    .CreateLogger();
+builder.Logging.AddSerilog(logger);
+
 
 builder.Services.Configure<AppConfig>(builder.Configuration);
 // Add services to the container.
