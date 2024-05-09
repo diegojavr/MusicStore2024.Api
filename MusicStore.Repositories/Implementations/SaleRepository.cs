@@ -35,6 +35,7 @@ namespace MusicStore.Repositories.Implementations
         }
         public async override Task UpdateAsync(Sale? entity = null)
         {
+            //Confirma transacción y luego actualiza la base de datos
             await Context.Database.CommitTransactionAsync();
             await base.UpdateAsync(entity);
         }

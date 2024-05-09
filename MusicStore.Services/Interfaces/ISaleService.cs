@@ -11,5 +11,7 @@ namespace MusicStore.Services.Interfaces
     public interface ISaleService
     {
         Task<BaseResponseGeneric<int>> AddAsync(string email, SaleDtoRequest request);
+
+        Task<BaseResponseGeneric<SaleDtoResponse>> FindByIdAsync(int id); 
     }
 }
