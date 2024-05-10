@@ -12,6 +12,7 @@ using Serilog;
 using MusicStore.Domain.Configuration;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
+using MusicStore.Api.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args); //Crea puerto de desarrollo para la aplicacion web
 
@@ -158,6 +159,8 @@ app.UseAuthorization();
 
 
 app.MapControllers();
+app.MapReports();
+
 
 //solo aqui se crean instancias
 using (var scope = app.Services.CreateScope())

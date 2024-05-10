@@ -12,6 +12,6 @@ namespace MusicStore.Repositories.Interfaces
     {
         Task CreateTransactionAsync();
         Task RollBackAsync();
-        Task<IEnumerable<ReportInfo>> GetReportSaleAsync(DateTime dataStart, DateTime dateTime);
+        Task<IEnumerable<ReportInfo>> GetReportSaleAsync(DateTime dateStart, DateTime dateEnd);
     }
 }

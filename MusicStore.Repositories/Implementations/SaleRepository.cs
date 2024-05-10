@@ -85,9 +85,12 @@ namespace MusicStore.Repositories.Implementations
         {
             await Context.Database.RollbackTransactionAsync();
         }
-        public Task<IEnumerable<ReportInfo>> GetReportSaleAsync(DateTime dataStart, DateTime dateTime)
+        public async Task<IEnumerable<ReportInfo>> GetReportSaleAsync(DateTime dateStart, DateTime dateEnd)
         {
-            throw new NotImplementedException();
+            var query = Context.Set<ReportInfo>()
+                .FromSqlRaw("EXEC uspReportSales {0},{1}", dateStart, dateEnd);
+
+            return await query.ToListAsync();
         }
 
     }

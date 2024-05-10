@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MusicStore.Domain;
+using MusicStore.Domain.Info;
 using System.Reflection;
 
 namespace MusicStore.Persistence
@@ -47,7 +48,13 @@ namespace MusicStore.Persistence
                 e.ToTable("UsuarioRol");
             });
 
+            //Aqui especificamos como EF Core debe manipular los datos en esta nueva clase
+            modelBuilder.Entity<ReportInfo>()
+                .HasNoKey(); //no es tabla entonces no tiene key (llave)
 
+            modelBuilder.Entity<ReportInfo>()
+                .Property(p => p.Total)
+                .HasPrecision(11, 2);
 
 
             //Concert

@@ -12,6 +12,7 @@ namespace MusicStore.Services.Interfaces
     {
         Task<BaseResponseGeneric<int>> AddAsync(string email, SaleDtoRequest request);
 
-        Task<BaseResponseGeneric<SaleDtoResponse>> FindByIdAsync(int id); 
+        Task<BaseResponseGeneric<SaleDtoResponse>> FindByIdAsync(int id);
+        Task<BaseResponseGeneric<ICollection<ReportDtoResponse>>> GetReportSaleAsync(DateTime dateStart, DateTime dateEnd);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MusicStore.Domain;
+using MusicStore.Domain.Info;
 using MusicStore.Dto.Request;
 using MusicStore.Dto.Response;
 using System;
@@ -34,6 +35,9 @@ namespace MusicStore.Services.Profiles
                 .ForMember(d => d.FullName, o => o.MapFrom(_ => _.Customer.FullName))
                 .ForMember(d => d.SaleDate, o => o.MapFrom(_ => _.SaleDate.ToString("dd/MM/yyyy HH:mm",Culture)));
 
+
+            //Mapeo para SaleService.GetReportSaleAsync
+            CreateMap<ReportInfo, ReportDtoResponse>();
 
 
         }

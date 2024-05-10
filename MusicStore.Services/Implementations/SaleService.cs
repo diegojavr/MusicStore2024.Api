@@ -93,5 +93,23 @@ namespace MusicStore.Services.Implementations
             }
             return response;
         }
+
+        public async Task<BaseResponseGeneric<ICollection<ReportDtoResponse>>> GetReportSaleAsync(DateTime dateStart, DateTime dateEnd)
+        {
+            var response = new BaseResponseGeneric<ICollection<ReportDtoResponse>>();
+            try
+            {
+                var list = await _repository.GetReportSaleAsync(dateStart, dateEnd);
+                response.Data = _mapper.Map<ICollection<ReportDtoResponse>>(list);
+                response.Success = true;    
+            }
+            catch (Exception ex)
+            {
+
+                response.ErrorMessage = "Error al obtener los datos del reporte";
+                _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+            }
+            return response;
+        }
     }
 }
