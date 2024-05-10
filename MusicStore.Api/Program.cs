@@ -81,6 +81,7 @@ builder.Services.AddAutoMapper(config =>
 {
     config.AddProfile<ConcertProfile>();
     config.AddProfile<DataProfile>(); //Profile de concert desde repositorio
+    config.AddProfile<SaleProfile>();
 });
 
 builder.Services.AddControllers();

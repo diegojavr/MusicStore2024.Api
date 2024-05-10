@@ -25,7 +25,7 @@ namespace MusicStore.Repositories.Implementations
         }
         public override async Task<int> AddAsync(Sale entity)
         {
-            entity.SaleDate=DateTime.Now;
+            entity.SaleDate = DateTime.Now;
             var lastNumber = await Context.Set<Sale>().CountAsync() + 1;
             entity.OperationNumber = $"{lastNumber:00000}";
 
@@ -38,6 +38,47 @@ namespace MusicStore.Repositories.Implementations
             //Confirma transacción y luego actualiza la base de datos
             await Context.Database.CommitTransactionAsync();
             await base.UpdateAsync(entity);
+        }
+
+        public override async Task<Sale?> FindByIdAsync(int id)
+        {
+            //Eager Loading
+            //return await Context.Set<Sale>()
+            //    .Include(x => x.Customer)
+            //    .Include(x => x.Concert)
+            //    .ThenInclude(p => p.Genre)
+            //    .Where(p => p.Id == id)
+            //    .AsNoTracking()
+            //    .FirstOrDefaultAsync();
+
+
+            //Lazy Loading
+            var query = Context.Set<Sale>()
+                .Where(s => s.Id == id)
+                .Select(p => new Sale
+                {
+                    Id = p.Id,
+                    Customer = new Customer()
+                    {
+                        FullName = p.Customer.FullName
+                    },
+                    Concert = new Concert()
+                    {
+                        DateEvent = p.Concert.DateEvent,
+                        ImageUrl = p.Concert.ImageUrl,
+                        Title = p.Concert.Title,
+                        Genre = new Genre()
+                        {
+                            Name = p.Concert.Genre.Name
+                        },
+                    },
+                    OperationNumber = p.OperationNumber,
+                    Quantity = p.Quantity,
+                    SaleDate = p.SaleDate,
+                    Total = p.Total,
+                });
+
+            return await query.FirstOrDefaultAsync();
         }
 
         public async Task RollBackAsync()

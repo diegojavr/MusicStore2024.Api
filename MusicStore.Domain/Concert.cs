@@ -9,8 +9,8 @@ namespace MusicStore.Domain
     public class Concert : EntityBase
     {
         public required string Title { get; set; }
-        public required string Description { get; set; }
-        public required string Place { get; set; }
+        public string Description { get; set; } = default!;
+        public string Place { get; set; } = default!;
         public decimal UnitPrice { get; set; }
         public Genre Genre { get; set; } = default!;
         public int GenreId { get; set; }//Entity Framework ya la define como un nuevo id dentro de concert en la BD

@@ -46,7 +46,7 @@ namespace MusicStore.Services.Implementations
                 if (customer == null)
                 {
                     throw new InvalidOperationException($"La cuenta {email} no está registrado como cliente");
-                    
+
                 }
 
                 entity.CustomerId = customer.Id;
@@ -77,19 +77,19 @@ namespace MusicStore.Services.Implementations
 
         public async Task<BaseResponseGeneric<SaleDtoResponse>> FindByIdAsync(int id)
         {
-           var response = new BaseResponseGeneric<SaleDtoResponse>();
+            var response = new BaseResponseGeneric<SaleDtoResponse>();
 
             try
             {
                 var sale = await _repository.FindByIdAsync(id);
-                response.Data=_mapper.Map<SaleDtoResponse>(sale);
-                response.Success= true;
+                response.Data = _mapper.Map<SaleDtoResponse>(sale);
+                response.Success = true;
             }
             catch (Exception ex)
             {
                 response.ErrorMessage = "Error al obtener la venta";
                 _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
-                
+
             }
             return response;
         }

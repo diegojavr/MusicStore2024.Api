@@ -20,13 +20,16 @@ namespace MusicStore.Services
             return services.AddTransient<IGenreService, GenreService>()
                 .AddTransient<IConcertService, ConcertService>()
                 .AddTransient<IUserService, UserService>()
-                .AddTransient<IEmailService, EmailService>();
+                .AddTransient<IEmailService, EmailService>()
+                .AddTransient<ISaleService, SaleService>();
+            
         }
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
             return services.AddTransient<IGenreRepository, GenreRepository>()
                 .AddTransient<IConcertRepository, ConcertRepository>()
-                .AddTransient<ICustomerRepository, CustomerRepository>();
+                .AddTransient<ICustomerRepository, CustomerRepository>()
+                .AddTransient<ISaleRepository, SaleRepository>();
         }
 
         public static IServiceCollection AddUploader(this IServiceCollection services, IConfiguration configuration)
