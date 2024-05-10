@@ -27,6 +27,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "04. HealthChecks", "04. Hea
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "05. Pruebas unitarias", "05. Pruebas unitarias", "{459F7D33-C482-4087-9071-4A5F7148A024}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicStore.HealthCheckApi", "..\MusicStore.HealthCheckApi\MusicStore.HealthCheckApi.csproj", "{8E19BAD2-1220-4DC0-B3AE-FB579EF1FAAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{A291783C-C1F2-4D7B-8BA3-2921088EF14A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A291783C-C1F2-4D7B-8BA3-2921088EF14A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A291783C-C1F2-4D7B-8BA3-2921088EF14A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E19BAD2-1220-4DC0-B3AE-FB579EF1FAAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E19BAD2-1220-4DC0-B3AE-FB579EF1FAAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E19BAD2-1220-4DC0-B3AE-FB579EF1FAAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E19BAD2-1220-4DC0-B3AE-FB579EF1FAAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +74,7 @@ Global
 		{66D438A2-3817-442C-B4D0-C528DB8CFBB9} = {22523904-4DCB-4E1D-BBAE-7421F2A17A13}
 		{98775AE3-631D-4A3D-913F-1A66C7877B6F} = {CB0C85EB-2A27-416A-B293-B7608CA74A6A}
 		{A291783C-C1F2-4D7B-8BA3-2921088EF14A} = {CB0C85EB-2A27-416A-B293-B7608CA74A6A}
+		{8E19BAD2-1220-4DC0-B3AE-FB579EF1FAAF} = {480EB7F3-7F68-4E40-B50D-4DD32BE5D3B8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D56801A9-AC5A-4A62-8F86-BE9574F35A28}

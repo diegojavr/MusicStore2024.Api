@@ -13,7 +13,7 @@ namespace MusicStore.Api.Endpoints
 
             group.MapGet("/", async (ISaleService service, string dateStart, string dateEnd) =>
             {
-                BaseResponseGeneric<ICollection<ReportDtoResponse>> response = null;
+                var response = new BaseResponseGeneric<ICollection<ReportDtoResponse>>();
                 try
                 {
                     response = await service.GetReportSaleAsync(DateTime.Parse(dateStart), DateTime.Parse(dateEnd));
@@ -26,7 +26,6 @@ namespace MusicStore.Api.Endpoints
                 }
                 catch (Exception ex)
                 {
-                    response = new BaseResponseGeneric<ICollection<ReportDtoResponse>>();
                     response.ErrorMessage = ex.Message;
 
                 }
