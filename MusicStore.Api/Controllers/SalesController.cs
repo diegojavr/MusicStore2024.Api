@@ -28,7 +28,7 @@ namespace MusicStore.Api.Controllers
             return response.Success ? Ok(response) : BadRequest(response);
         }
 
-        [HttpGet]
+        [HttpGet("{id:int}")]
         [Authorize]
         public async Task<IActionResult> Get(int id)
         {
