@@ -9,6 +9,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
 
 namespace MusicStore.Repositories.Implementations
 {
@@ -87,10 +88,22 @@ namespace MusicStore.Repositories.Implementations
         }
         public async Task<IEnumerable<ReportInfo>> GetReportSaleAsync(DateTime dateStart, DateTime dateEnd)
         {
-            var query = Context.Set<ReportInfo>()
-                .FromSqlRaw("EXEC uspReportSales {0},{1}", dateStart, dateEnd);
 
-            return await query.ToListAsync();
+            //var query = Context.Set<ReportInfo>()
+            //    .FromSqlRaw("EXEC uspReportSales {0},{1}", dateStart, dateEnd);
+
+            //return await query.ToListAsync();
+
+            //Uso de Dapper
+            var query = await Context.Database.GetDbConnection()
+                .QueryAsync<ReportInfo>(sql: "uspReportSales", commandType: CommandType.StoredProcedure,
+                param: new
+                {
+                    DateStart = dateStart,
+                    DateEnd = dateEnd
+                });
+
+            return query;
         }
 
     }

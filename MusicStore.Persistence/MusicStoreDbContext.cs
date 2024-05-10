@@ -48,13 +48,16 @@ namespace MusicStore.Persistence
                 e.ToTable("UsuarioRol");
             });
 
-            //Aqui especificamos como EF Core debe manipular los datos en esta nueva clase
-            modelBuilder.Entity<ReportInfo>()
-                .HasNoKey(); //no es tabla entonces no tiene key (llave)
 
-            modelBuilder.Entity<ReportInfo>()
-                .Property(p => p.Total)
-                .HasPrecision(11, 2);
+            ////Esta configuración aplica siempre y cuando no se aplique Dapper
+            
+            ////Aqui especificamos como EF Core debe manipular los datos en esta nueva clase
+            //modelBuilder.Entity<ReportInfo>()
+            //    .HasNoKey(); //no es tabla entonces no tiene key (llave)
+
+            //modelBuilder.Entity<ReportInfo>()
+            //    .Property(p => p.Total)
+            //    .HasPrecision(11, 2);
 
 
             //Concert
