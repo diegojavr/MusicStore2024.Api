@@ -56,6 +56,11 @@ namespace MusicStore.Services.Implementations
                     throw new Exception($"El concierto con ID {request.ConcertId} no existe");
                 }
 
+                if (DateTime.Today > concert.DateEvent)
+                {
+                    throw new InvalidOperationException($"No se puede comprar tickets del concierto {concert.Title} después de la fecha del evento");
+                }
+
                 entity.Total = entity.Quantity * concert.UnitPrice;
                 await _repository.AddAsync(entity);
                 await _repository.UpdateAsync(entity);
@@ -69,7 +74,7 @@ namespace MusicStore.Services.Implementations
                 //Solo cuando hay alguna excepción se hace RollBack
                 await _repository.RollBackAsync();
                 _logger.LogError(ex, "Error agregando la venta {Message}", ex.Message);
-                throw;
+                
             }
 
             return response;

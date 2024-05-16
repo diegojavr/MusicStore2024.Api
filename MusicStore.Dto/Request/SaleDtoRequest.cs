@@ -6,5 +6,10 @@ using System.Threading.Tasks;
 
 namespace MusicStore.Dto.Request
 {
-    public record SaleDtoRequest(int ConcertId, short TicketsQuantity);
+    public record SaleDtoRequest
+    {
+        public int ConcertId { get; init; }
+        public short TicketsQuantity { get; init; }
+
+    }
 }
