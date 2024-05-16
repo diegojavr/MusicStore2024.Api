@@ -56,6 +56,12 @@ namespace MusicStore.Api.Controllers
             var response = await _service.DeleteAsync(id);
             return response.Success ? Ok(response) : BadRequest(response);
         }
+        [HttpPatch("{id:int}")]
+        public async Task<IActionResult> Patch(int id)
+        {
+            var response = await _service.FinalizeAsync(id);
+            return Ok(response);
+        }
 
     }
 }

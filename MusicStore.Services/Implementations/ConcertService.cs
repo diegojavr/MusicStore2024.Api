@@ -155,5 +155,22 @@ namespace MusicStore.Services.Implementations
             }
             return response;
         }
+
+        public async Task<BaseResponse> FinalizeAsync(int id)
+        {
+            var response = new BaseResponse();
+            try
+            {
+                await _repository.FinalizeAsync(id);
+                response.Success = true;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = "Error al finalizar el concierto";
+                _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+               
+            }
+            return response;
+        }
     }
 }

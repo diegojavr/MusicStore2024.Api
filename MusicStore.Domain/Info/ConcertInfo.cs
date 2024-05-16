@@ -20,5 +20,6 @@ namespace MusicStore.Domain.Info
         public string? ImageUrl { get; set; }
         public int TicketsQuantity { get; set; }
         public bool Finalized { get; set; }
+        public string Status { get; set; } = default!;  
     }
 }

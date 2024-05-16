@@ -17,6 +17,6 @@ namespace MusicStore.Services.Interfaces
         Task<BaseResponseGeneric<int>> AddAsync(ConcertDtoRequest request);
         Task<BaseResponse> UpdateAsync(int id, ConcertDtoRequest request);
         Task<BaseResponse> DeleteAsync(int id);
-
+        Task<BaseResponse> FinalizeAsync(int id);
     }
 }

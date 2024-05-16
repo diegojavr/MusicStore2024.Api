@@ -20,7 +20,7 @@ namespace MusicStore.Repositories.Implementations
         private readonly IMapper _mapper;
 
         public ConcertRepository(MusicStoreDbContext context, IMapper mapper)
-            :base(context)
+            : base(context)
         {
             _mapper = mapper;
         }
@@ -52,6 +52,7 @@ namespace MusicStore.Repositories.Implementations
                 Id = p.Id,
                 Title = p.Title,
                 Genre = p.Genre.Name,
+                GenreId = p.GenreId,
                 Description = p.Description,
                 Place = p.Place,
                 UnitPrice = p.UnitPrice,
@@ -59,15 +60,26 @@ namespace MusicStore.Repositories.Implementations
                 TimeEvent = p.DateEvent.ToString("HH:mm"),
                 TicketsQuantity = p.TicketsQuantity,
                 ImageUrl = p.ImageUrl,
+                Status = p.Status ? "Activo" : "Inactivo"
             }, orderBy, page, rows);
 
-            
+
         }
         public override async Task<Concert?> FindByIdAsync(int id)
         {
             return await Context.Set<Concert>()
                 .Include(p => p.Genre)
-                .FirstOrDefaultAsync(p=> p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id == id);
+        }
+
+        public async Task FinalizeAsync(int id)
+        {
+            var registro = await FindByIdAsync(id);
+            if (registro != null)
+            {
+                registro.Finalized = true;
+                await UpdateAsync(registro);
+            }
         }
     }
 }
