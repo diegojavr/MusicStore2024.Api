@@ -116,5 +116,58 @@ namespace MusicStore.Services.Implementations
             }
             return response;
         }
+
+        public async Task<BaseResponsePagination<SaleDtoResponse>> ListAsync(DateTime dateStart, DateTime dateEnd, int page, int rows)
+        {
+            var response = new BaseResponsePagination<SaleDtoResponse>();
+            try
+            {
+                var end = dateEnd.AddHours(23);
+
+                //Tupla para repositorio ListAsync, predicado con el rango de fechas del SaleDate,
+                //selector utilizando las propiedades del mapeo SaleDtoResponse y Sale,
+                //orderBy por operationNumber, ventas de todos los usuarios,
+                //pagina y filas
+                var tupla = await _repository.ListAsync(p => p.SaleDate >= dateStart && p.SaleDate <= end,
+                    p => _mapper.Map<SaleDtoResponse>(p),
+                    x => x.OperationNumber,
+                    page, rows);
+
+                response.Data = tupla.Collection;
+                response.TotalPages = Utilities.GetTotalPages(tupla.Total, rows);
+                response.Success = true;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = "Error al listar las ventas por rango";
+                _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+                
+            }
+            return response;
+        }
+
+        public async Task<BaseResponsePagination<SaleDtoResponse>> ListAsync(string email, string? filter, int page, int rows)
+        {
+            var response = new BaseResponsePagination<SaleDtoResponse>();
+            try
+            {
+                var tupla = await _repository.ListAsync(p=>p.Customer.Email.Equals(email)
+                && p.Concert.Title.Contains(filter ?? string.Empty),
+                p => _mapper.Map<SaleDtoResponse>(p),
+                    x => x.SaleDate,
+                    page, rows);
+                response.Data = tupla.Collection;
+                response.TotalPages=Utilities.GetTotalPages(tupla.Total,rows);
+                response.Success = true;    
+
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = "Error al listar las ventas por usuario";
+                _logger.LogCritical(ex, "{ErrorMessage} {Message}", response.ErrorMessage, ex.Message);
+
+            }
+            return response;
+        }
     }
 }

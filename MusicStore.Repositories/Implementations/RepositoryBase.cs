@@ -65,7 +65,7 @@ namespace MusicStore.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<(ICollection<TInfo> Collection, int Total)> ListAsync<TInfo, TKey>
+        public virtual async Task<(ICollection<TInfo> Collection, int Total)> ListAsync<TInfo, TKey>
             (Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, TInfo>> selector,
             Expression<Func<TEntity, TKey>> orderBy,

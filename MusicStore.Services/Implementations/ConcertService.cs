@@ -90,15 +90,17 @@ namespace MusicStore.Services.Implementations
                 var tupla = await _repository
                     .ListAsync(filter, page, rows);
 
-                var total = tupla.Total / rows;
-                if (tupla.Total % rows > 0)
-                {
-                    total++;
-                }
+                //var total = tupla.Total / rows;
+                //if (tupla.Total % rows > 0)
+                //{
+                //    total++;
+                //}
+
+
                 response.Data = tupla.Collection
                     .Select(p => _mapper.Map<ConcertDtoResponse>(p))
                     .ToList();
-                response.TotalPages = total;
+                response.TotalPages = Utilities.GetTotalPages(tupla.Total,rows);
                 response.Success= true;
             }
             catch (Exception ex)

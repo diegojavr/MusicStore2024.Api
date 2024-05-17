@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
+using System.Linq.Expressions;
 
 namespace MusicStore.Repositories.Implementations
 {
@@ -104,6 +105,30 @@ namespace MusicStore.Repositories.Implementations
                 });
 
             return query;
+        }
+
+        public override async Task<(ICollection<TInfo> Collection, int Total)> ListAsync<TInfo, TKey>
+            (Expression<Func<Sale, bool>> predicate, 
+            Expression<Func<Sale, TInfo>> selector, 
+            Expression<Func<Sale, TKey>> orderBy, 
+            int page, int rows)
+        {
+            var collection = await Context.Set<Sale>()
+                .Include(p => p.Concert)
+                .ThenInclude(p => p.Genre)
+                .Include(p => p.Customer)
+                .Where(predicate)
+                .OrderBy(orderBy)
+                .Skip((page - 1) * rows)
+                .Take(rows)
+                .Select(selector)
+                .ToListAsync();
+
+            var total = await Context.Set<Sale>()
+                .Where(predicate)
+                .CountAsync();
+
+            return (collection, total);
         }
 
     }

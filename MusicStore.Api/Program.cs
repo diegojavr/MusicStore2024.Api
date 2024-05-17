@@ -160,6 +160,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapReports();
+app.MapHomeEndpoints();
 
 
 //solo aqui se crean instancias

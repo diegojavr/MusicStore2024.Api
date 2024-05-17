@@ -1,0 +1,10 @@
+2024-05-17 16:21:03 [WRN] - Entity '"Genre"' has a global query filter defined and is the required end of a relationship with the entity '"Concert"'. This may lead to unexpected results when the required entity is filtered out. Either configure the navigation as optional, or define matching query filters for both entities in the navigation. See https://go.microsoft.com/fwlink/?linkid=2131316 for more information.
+2024-05-17 16:21:03 [WRN] - Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+2024-05-17 16:21:47 [WRN] - Error de autenticación para el usuario "admin@gmail.com"
+2024-05-17 16:24:38 [WRN] - Error de conversión de formato de fecha "The string 'sdf' was not recognized as a valid DateTime. There is an unknown word starting at index '0'."
+System.FormatException: The string 'sdf' was not recognized as a valid DateTime. There is an unknown word starting at index '0'.
+   at System.DateTime.Parse(String s)
+   at MusicStore.Api.Controllers.SalesController.GetListSalesByDate(String dateStart, String dateEnd, Int32 page, Int32 rows) in C:\Users\Diego\OneDrive\Curso MitoCode\MusicStore2024\MusicStore.Api\Controllers\SalesController.cs:line 48
+2024-05-17 16:26:35 [ERR] - Error agregando la venta "No se puede comprar tickets del concierto Empire Music Festival 2024 después de la fecha del evento"
+System.InvalidOperationException: No se puede comprar tickets del concierto Empire Music Festival 2024 después de la fecha del evento
+   at MusicStore.Services.Implementations.SaleService.AddAsync(String email, SaleDtoRequest request) in C:\Users\Diego\OneDrive\Curso MitoCode\MusicStore2024\MusicStore.Services\Implementations\SaleService.cs:line 61
