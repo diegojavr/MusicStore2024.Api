@@ -14,6 +14,8 @@ builder.Services.AddDbContext<MusicStoreDbContext>(options =>
 });
 
 
+
+//HealthChecks
 builder.Services
     .AddHealthChecksUI(setup =>
     {
