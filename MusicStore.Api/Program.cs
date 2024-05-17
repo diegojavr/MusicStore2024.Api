@@ -13,6 +13,7 @@ using MusicStore.Domain.Configuration;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 using MusicStore.Api.Endpoints;
+using System.Drawing;
 
 var builder = WebApplication.CreateBuilder(args); //Crea puerto de desarrollo para la aplicacion web
 
@@ -36,8 +37,23 @@ var logger = new LoggerConfiguration()
     .CreateLogger();
 builder.Logging.AddSerilog(logger);
 
-
+//Archivo de configuracion de aplicacion
 builder.Services.Configure<AppConfig>(builder.Configuration);
+
+
+var corsConfiguration = "MusicStoreApi";
+builder.Services.AddCors(setup =>
+{
+    setup.AddPolicy(corsConfiguration, policy =>
+    {
+        policy.AllowAnyOrigin(); ////Cualquiera puede consumir el api
+        //policy.WithOrigins(new[] { "https://localhost:5500", "midominio.com" }); //Solo estos dominios pueden consumir el API
+        policy.AllowAnyMethod(); //Cualquier metodo como patch
+        policy.AllowAnyHeader(); //que permita Bearer token para autenticación
+    });
+});
+
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
@@ -156,6 +172,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseCors(corsConfiguration);
 
 
 app.MapControllers();

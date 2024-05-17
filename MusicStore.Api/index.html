@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<htmll lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Music Store API Test</title>
+</head>
+<body>
+    <script type="text/javascript">
+        getData();
+
+        function getData() {
+
+            var options = {
+                method: 'GET'
+            }
+            fetch("https://localhost:7000/api/Home", options)
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.log('error', error));
+        }
+    </script>
+</body>
+</htmll>

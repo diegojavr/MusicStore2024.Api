@@ -29,7 +29,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "05. Pruebas unitarias", "05
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicStore.HealthCheckApi", "..\MusicStore.HealthCheckApi\MusicStore.HealthCheckApi.csproj", "{8E19BAD2-1220-4DC0-B3AE-FB579EF1FAAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicStore.UnitTests", "..\MusicStore.UnitTests\MusicStore.UnitTests.csproj", "{49636CA8-4D9B-4DB6-ABD3-6A4F64D84D8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicStore.UnitTests", "..\MusicStore.UnitTests\MusicStore.UnitTests.csproj", "{49636CA8-4D9B-4DB6-ABD3-6A4F64D84D8E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "06. HTML", "06. HTML", "{742BA519-7EA9-455E-B6B6-A0BB3516D724}"
+	ProjectSection(SolutionItems) = preProject
+		index.html = index.html
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
