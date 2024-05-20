@@ -21,11 +21,6 @@ var builder = WebApplication.CreateBuilder(args); //Crea puerto de desarrollo pa
 //Crea el logger para escribir dentro de Console
 //MSSqlServerSinkOptions para configurar que no se guarden todos los logs posibles, sino sería muy pesado y afecta rendimiento
 var logger = new LoggerConfiguration()
-    .WriteTo.Console(LogEventLevel.Information)
-    .WriteTo.File("..\\log.txt",
-    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] - {Message}{NewLine}{Exception}",
-    rollingInterval: RollingInterval.Day,
-    restrictedToMinimumLevel: LogEventLevel.Warning)
     .WriteTo.MSSqlServer(builder.Configuration.GetConnectionString("MusicStoreDb"),
     new MSSqlServerSinkOptions
     {
@@ -36,6 +31,22 @@ var logger = new LoggerConfiguration()
     }, restrictedToMinimumLevel: LogEventLevel.Warning)
     .CreateLogger();
 builder.Logging.AddSerilog(logger);
+
+
+if (builder.Environment.IsDevelopment())
+{
+    var loggerFile = new LoggerConfiguration()
+        .WriteTo.Console(LogEventLevel.Information)
+        .WriteTo.File("..\\log.txt",
+            outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] - {Message}{NewLine}{Exception}",
+            rollingInterval: RollingInterval.Day,
+            restrictedToMinimumLevel: LogEventLevel.Warning)
+        .CreateLogger();
+
+
+    builder.Logging.AddSerilog(loggerFile);
+}
+
 
 //Archivo de configuracion de aplicacion
 builder.Services.Configure<AppConfig>(builder.Configuration);
@@ -161,11 +172,10 @@ var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment()) //este muestra el swagger
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment()) //este muestra el swagger
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 
