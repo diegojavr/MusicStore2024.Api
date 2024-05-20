@@ -15,4 +15,8 @@
     <ProjectReference Include="..\MusicStore.Persistence\MusicStore.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Scripts\" />
+  </ItemGroup>
+
 </Project>
