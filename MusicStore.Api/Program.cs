@@ -194,6 +194,11 @@ app.MapHomeEndpoints();
 //solo aqui se crean instancias
 using (var scope = app.Services.CreateScope())
 {
+    if (builder.Environment.IsDevelopment())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<MusicStoreDbContext>();
+        db.Database.Migrate();
+    }
     //Ejecutamos la creacion del usuario admin y roles por default
     await UserDataSeeder.Seed(scope.ServiceProvider);
 }
