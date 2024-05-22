@@ -35,7 +35,7 @@ namespace MusicStore.Services
         public static IServiceCollection AddUploader(this IServiceCollection services, IConfiguration configuration)
         {
             //Si consigue el valor core.windows.net utiliza el uploader a Azure, sino será local
-            if (configuration.GetSection("StorageConfiguration:Path").Value!.Contains("core.windows.net"))
+            if (configuration.GetSection("StorageConfiguration:PublicUrl").Value!.Contains("core.windows.net"))
             {
                 services.AddTransient<IFileUploader, AzureBlobStorageUploader>();
             }
